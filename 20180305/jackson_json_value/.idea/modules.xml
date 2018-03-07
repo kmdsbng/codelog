@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/jackson_json_value.iml" filepath="$PROJECT_DIR$/.idea/modules/jackson_json_value.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/jackson_json_value_main.iml" filepath="$PROJECT_DIR$/.idea/modules/jackson_json_value_main.iml" group="jackson_json_value" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/jackson_json_value_test.iml" filepath="$PROJECT_DIR$/.idea/modules/jackson_json_value_test.iml" group="jackson_json_value" />
+    </modules>
+  </component>
+</project>
