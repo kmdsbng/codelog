@@ -27,3 +27,4 @@ fun main(argv: Array<String>) {
     val nullableList: List<Int?> = listOf(1, 2, null, 4)
     val nonnullList = nullableList.filterNotNull()
 }
+
