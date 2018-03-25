@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/single_linked_list.iml" filepath="$PROJECT_DIR$/.idea/modules/single_linked_list.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/single_linked_list_main.iml" filepath="$PROJECT_DIR$/.idea/modules/single_linked_list_main.iml" group="single_linked_list" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/single_linked_list_test.iml" filepath="$PROJECT_DIR$/.idea/modules/single_linked_list_test.iml" group="single_linked_list" />
+    </modules>
+  </component>
+</project>
