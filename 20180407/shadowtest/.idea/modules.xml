@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/shadowtest.iml" filepath="$PROJECT_DIR$/.idea/modules/shadowtest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/shadowtest_main.iml" filepath="$PROJECT_DIR$/.idea/modules/shadowtest_main.iml" group="shadowtest" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/shadowtest_test.iml" filepath="$PROJECT_DIR$/.idea/modules/shadowtest_test.iml" group="shadowtest" />
+    </modules>
+  </component>
+</project>
