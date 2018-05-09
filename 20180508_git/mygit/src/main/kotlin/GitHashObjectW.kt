@@ -1,9 +1,12 @@
 import java.io.FileInputStream
 import java.security.MessageDigest
+import java.util.zip.Deflater
+import java.util.zip.DeflaterInputStream
+import java.util.zip.DeflaterOutputStream
 import kotlin.system.exitProcess
 
 
-// ファイルからデータを読み込み、ハッシュ値を返す
+// ファイルからデータを読み込み、gitリポジトリに書き込む
 fun main(argv: Array<String>) {
     if (argv.size == 0) {
         println("Please set file path to parameter")
@@ -17,6 +20,10 @@ fun main(argv: Array<String>) {
         val blobData = createBlobData(content)
         val sha1Hash = calcSha1Hash(blobData)
         println(sha1Hash.toHex())
+
+        compress(blobData) { bytes: ByteArray, len: Int ->
+            System.out.write(bytes, 0, len)
+        }
     } finally {
         input.close()
     }
@@ -67,6 +74,46 @@ private fun ByteArray.toHex() : String{
     }
 
     return result.toString()
+}
+
+//class HeaderOffsetCalculator {
+//    var headerEndFound: Boolean = false
+//
+//    fun getHeaderOffset(bytes: ByteArray, len: Int): Int { //        if (headerEndFound)
+//            return 0
+//
+//        var offset: Int = 0
+//        val endDelimiter: Byte = 0
+//
+//        while (offset < len) {
+//            if (bytes[offset] == endDelimiter) {
+//                headerEndFound = true
+//                offset += 1
+//                break
+//            }
+//
+//            offset += 1
+//        }
+//
+//        return offset
+//    }
+//}
+//
+fun compress(data: ByteArray, cb: (bytes: ByteArray, len: Int) -> Unit) {
+//fun decompress(stream: InputStream, cb: (ByteArray, Int, Int) -> Unit) {
+
+    val complessor = Deflater()
+    complessor.setInput(data)
+    complessor.finish()
+
+    val bytes = ByteArray(3)
+    complessor.deflate(bytes)
+
+    while (!complessor.finished()) {
+        val len = complessor.deflate(bytes)
+        cb(bytes, len)
+    }
+    complessor.end()
 }
 
 

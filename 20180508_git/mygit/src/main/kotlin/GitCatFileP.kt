@@ -10,7 +10,6 @@ fun main(argv: Array<String>) {
         exitProcess(1)
     }
     val objectPath = argv[0]
-    println(objectPath)
 
     val stream = FileInputStream(objectPath)
 
