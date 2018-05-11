@@ -1,29 +1,80 @@
+import java.io.File
 import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.security.InvalidParameterException
 import java.security.MessageDigest
 import java.util.zip.Deflater
-import java.util.zip.DeflaterInputStream
-import java.util.zip.DeflaterOutputStream
 import kotlin.system.exitProcess
 
+data class Sha1Hash(
+        val valueOrg: String
+) {
+    val value = valueOrg.toLowerCase()
+    init {
+        if (value.length != 40) {
+            throw InvalidParameterException("Invalid sha1 hash length: ${value}")
+        }
+    }
+}
+
+data class ObjectPath(
+        val repoPathOrg: String,
+        val hash: Sha1Hash
+) {
+    val dirName = hash.value.slice(0..1)
+    val fileName = hash.value.slice(2..(hash.value.length - 1))
+    val repoPath = if (repoPathOrg[repoPathOrg.length - 1] == '/') {
+        repoPathOrg.slice(0..(repoPathOrg.length - 2))
+    } else {
+        repoPathOrg
+    }
+
+    init {
+        if (repoPath.endsWith(".git") == false) {
+            throw InvalidParameterException("Repository directory is not .git: ${repoPath}")
+        }
+    }
+
+    fun getDirPath(): String {
+        return "${repoPath}/objects/${dirName}"
+    }
+
+    fun getObjectPath(): String {
+        return "${repoPath}/objects/${dirName}/${fileName}"
+    }
+}
 
 // ファイルからデータを読み込み、gitリポジトリに書き込む
 fun main(argv: Array<String>) {
-    if (argv.size == 0) {
-        println("Please set file path to parameter")
+    if (argv.size < 2) {
+        println("Please set input / git repo path to parameter")
         exitProcess(1)
     }
-    val objectPath = argv[0]
-    val input = FileInputStream(objectPath)
+    val inputPath = argv[0]
+    val repoPath = argv[1]
+    val input = FileInputStream(inputPath)
 
     try {
         val content = readFile(input)
         val blobData = createBlobData(content)
         val sha1Hash = calcSha1Hash(blobData)
-        println(sha1Hash.toHex())
+        val objectPath = ObjectPath(repoPath, Sha1Hash(sha1Hash.toHex()))
+        println(objectPath.repoPath)
+        println(objectPath.getDirPath())
+        println(objectPath.getObjectPath())
 
-        compress(blobData) { bytes: ByteArray, len: Int ->
-            System.out.write(bytes, 0, len)
+        File(objectPath.getDirPath()).mkdirs()
+        val outputFile = File(objectPath.getObjectPath())
+        outputFile.setWritable(true)
+        val output = FileOutputStream(objectPath.getObjectPath())
+        try {
+            compress(blobData) { bytes: ByteArray, len: Int ->
+                output.write(bytes, 0, len)
+            }
+        } finally {
+            output.close()
         }
+        outputFile.setWritable(false)
     } finally {
         input.close()
     }
@@ -76,44 +127,17 @@ private fun ByteArray.toHex() : String{
     return result.toString()
 }
 
-//class HeaderOffsetCalculator {
-//    var headerEndFound: Boolean = false
-//
-//    fun getHeaderOffset(bytes: ByteArray, len: Int): Int { //        if (headerEndFound)
-//            return 0
-//
-//        var offset: Int = 0
-//        val endDelimiter: Byte = 0
-//
-//        while (offset < len) {
-//            if (bytes[offset] == endDelimiter) {
-//                headerEndFound = true
-//                offset += 1
-//                break
-//            }
-//
-//            offset += 1
-//        }
-//
-//        return offset
-//    }
-//}
-//
 fun compress(data: ByteArray, cb: (bytes: ByteArray, len: Int) -> Unit) {
-//fun decompress(stream: InputStream, cb: (ByteArray, Int, Int) -> Unit) {
+    val deflater = Deflater()
+    deflater.setInput(data)
+    deflater.finish()
 
-    val complessor = Deflater()
-    complessor.setInput(data)
-    complessor.finish()
-
-    val bytes = ByteArray(3)
-    complessor.deflate(bytes)
-
-    while (!complessor.finished()) {
-        val len = complessor.deflate(bytes)
+    val bytes = ByteArray(1024)
+    while (!deflater.finished()) {
+        val len = deflater.deflate(bytes)
         cb(bytes, len)
     }
-    complessor.end()
+    deflater.end()
 }
 
 
